@@ -1,8 +1,12 @@
 #include <stdbool.h>
+#include <smmintrin.h>
+#include <immintrin.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 struct bitmap_t {
-    unsigned char* map;
-    unsigned int size;
+    uint8_t* map;
+    uint64_t size;
 };
 
 // Allocate and initialize a new bitmap.
@@ -18,10 +22,10 @@ void bm_free(struct bitmap_t* ptr);
 bool bm_is_empty(const struct bitmap_t* bm);
 
 // Sets the specified bit in bitmap to one.
-void bm_set_bit(struct bitmap_t* bm, unsigned int idx);
+void bm_set_bit(struct bitmap_t* bm, uint64_t idx);
 
 // Clears the specified bit in bitmap.
-void bm_clear_bit(struct bitmap_t* bm, unsigned int idx);
+void bm_clear_bit(struct bitmap_t* bm, uint64_t idx);
 
 // Returns true if two bitmaps are equal.
 bool bm_eq(const struct bitmap_t* bm1, const struct bitmap_t* bm2);
