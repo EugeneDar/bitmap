@@ -58,26 +58,28 @@ void bm_clear_bit(struct bitmap_t *bm, unsigned int idx) {
 // todo use sse
 bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     if (bm1->size >= bm2->size) {
+
         for (unsigned int i = 0; i < bm2->size; ++i) {
             if (bm1->map[i] != bm2->map[i]) {
                 return false;
             }
         }
 
-        for (unsigned int i = bm2->size + 1; i < bm1->size; ++i) {
+        for (unsigned int i = bm2->size; i < bm1->size; ++i) {
             if (bm1->map[i] != 0) {
                 return false;
             }
         }
 
     } else {
+
         for (unsigned int i = 0; i < bm1->size; ++i) {
             if (bm1->map[i] != bm2->map[i]) {
                 return false;
             }
         }
 
-        for (unsigned int i = bm1->size + 1; i < bm2->size; ++i) {
+        for (unsigned int i = bm1->size; i < bm2->size; ++i) {
             if (bm2->map[i] != 0) {
                 return false;
             }
@@ -93,7 +95,7 @@ void bm_and(struct bitmap_t* bm1, const struct bitmap_t* bm2) {
     for (unsigned int i = 0; i < min_size; ++i) {
         bm1->map[i] = bm1->map[i] & bm2->map[i];
     }
-    for (unsigned int i = min_size + 1; i < bm1->size; ++i) {
+    for (unsigned int i = min_size; i < bm1->size; ++i) {
         bm1->map[i] = 0;
     }
 }
