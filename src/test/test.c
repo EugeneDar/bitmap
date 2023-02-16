@@ -17,13 +17,56 @@ void some_test() {
     assert(bm_eq(bm1, bm2));
 }
 
-void some_other_test () {
-    // todo
+void set_bit_test () {
+    struct bitmap_t* bm1 = bm_new();
+    struct bitmap_t* bm2 = bm_new();
+
+    assert(bm_eq(bm1, bm2));
+
+    bm_set_bit(bm1, 1);
+    assert(!bm_eq(bm1, bm2));
+
+    bm_set_bit(bm2, 4);
+    assert(!bm_eq(bm1, bm2));
+
+    bm_set_bit(bm2, 4);
+    assert(!bm_eq(bm1, bm2));
+
+    bm_set_bit(bm1, 4);
+    assert(!bm_eq(bm1, bm2));
+
+    bm_set_bit(bm2, 1);
+    assert(bm_eq(bm1, bm2));
 }
+
+void is_empty_test() {
+    struct bitmap_t* bm1 = bm_new();
+    struct bitmap_t* bm2 = bm_new();
+
+    assert(bm_is_empty(bm1));
+    assert(bm_is_empty(bm2));
+
+    bm_set_bit(bm1, 1);
+    bm_set_bit(bm2, 4);
+
+    assert(!bm_is_empty(bm1));
+    assert(!bm_is_empty(bm2));
+
+    bm_clear_bit(bm1, 1);
+    bm_clear_bit(bm2, 4);
+
+    assert(bm_is_empty(bm1));
+    assert(bm_is_empty(bm2));
+}
+
+
+
+// todo clear_bit_test
 
 void run_all_tests() {
     some_test();
-    some_other_test();
+    is_empty_test();
+    set_bit_test();
 }
 
 int main() {
