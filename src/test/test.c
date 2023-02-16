@@ -1,5 +1,6 @@
 #include "test.h"
 
+#include <stdio.h>
 #include <assert.h>
 
 #include "../../src/lib/bitmap.h"
@@ -17,6 +18,9 @@ void some_test() {
     bm_clear_bit(bm1, 1);  // bm1 = 0b10000
 
     assert(bm_eq(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void init_test() {
@@ -30,6 +34,9 @@ void init_test() {
 
     bm_init(bm1);
     assert(bm_eq(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void set_bit_test() {
@@ -52,6 +59,9 @@ void set_bit_test() {
 
     bm_set_bit(bm2, 1);
     assert(bm_eq(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void is_empty_test() {
@@ -72,6 +82,9 @@ void is_empty_test() {
 
     assert(bm_is_empty(bm1));
     assert(bm_is_empty(bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void clear_bit_test() {
@@ -88,6 +101,9 @@ void clear_bit_test() {
 
     bm_clear_bit(bm1, 1000);
     assert(bm_eq(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void or_test() {
@@ -101,6 +117,9 @@ void or_test() {
 
     bm_or(bm2, bm1);
     assert(bm_eq(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void and_test() {
@@ -116,6 +135,9 @@ void and_test() {
 
     bm_clear_bit(bm2, 2);
     assert(bm_eq(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void is_disjoint_test() {
@@ -131,6 +153,9 @@ void is_disjoint_test() {
     bm_set_bit(bm2, 3);
 
     assert(!is_disjoint(bm1, bm2));
+
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void run_all_tests() {
@@ -146,4 +171,5 @@ void run_all_tests() {
 
 int main() {
     run_all_tests();
+    printf("Completed\n");
 }
