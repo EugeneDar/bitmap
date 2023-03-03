@@ -41,10 +41,22 @@ void bm_free(struct bitmap_t *ptr) {
     free(ptr);
 }
 
-// todo use sse
 bool bm_is_empty(const struct bitmap_t *bm) {
-    for (uint64_t i = 0; i < bm->size; ++i) {
-        if (bm->map[i] != 0) {
+    for (uint64_t i = 0; i < bm->size; i += 16) {
+        int result;
+        asm volatile (
+                "movups (%1), %%xmm0\n"
+                "xorps %%xmm1, %%xmm1\n"
+                "mov $0, %0\n"
+                "comisd %%xmm1, %%xmm0\n"
+                "jz end_position_2\n"
+                "mov $1, %0\n"
+                "end_position_2:\n"
+                : "=rm"(result)
+                : "rm"(bm->map + i)
+                : "xmm0", "xmm1"
+                );
+        if (result) {
             return false;
         }
     }
@@ -141,11 +153,25 @@ void bm_or(struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     }
 }
 
-// todo use sse
 bool is_disjoint(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     uint64_t min_size = bm1->size < bm2->size ? bm1->size : bm2->size;
-    for (uint64_t i = 0; i < min_size; ++i) {
-        if ((bm1->map[i] & bm2->map[i]) != 0) {
+    for (uint64_t i = 0; i < min_size; i += 16) {
+        int result;
+        asm volatile (
+                "movups (%1), %%xmm0\n"
+                "movups (%2), %%xmm1\n"
+                "andps %%xmm1, %%xmm0\n"
+                "xorps %%xmm1, %%xmm1\n"
+                "mov $0, %0\n"
+                "comisd %%xmm1, %%xmm0\n"
+                "jz end_position\n"
+                "mov $1, %0\n"
+                "end_position:\n"
+                : "=rm"(result)
+                : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                : "xmm0", "xmm1"
+                );
+        if (result) {
             return false;
         }
     }
