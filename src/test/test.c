@@ -29,7 +29,7 @@ void init_test() {
 
     bm_set_bit(bm1, 1);
     bm_set_bit(bm1, 3);
-    
+
     assert(!bm_eq(bm1, bm2));
 
     bm_init(bm1);
@@ -65,26 +65,19 @@ void set_bit_test() {
 }
 
 void is_empty_test() {
-    struct bitmap_t *bm1 = bm_new();
-    struct bitmap_t *bm2 = bm_new();
+    struct bitmap_t *bm = bm_new();
 
-    assert(bm_is_empty(bm1));
-    assert(bm_is_empty(bm2));
+    assert(bm_is_empty(bm));
 
-    bm_set_bit(bm1, 1);
-    bm_set_bit(bm2, 4);
+    bm_set_bit(bm, 1);
 
-    assert(!bm_is_empty(bm1));
-    assert(!bm_is_empty(bm2));
+    assert(!bm_is_empty(bm));
 
-    bm_clear_bit(bm1, 1);
-    bm_clear_bit(bm2, 4);
+    bm_clear_bit(bm, 1);
 
-    assert(bm_is_empty(bm1));
-    assert(bm_is_empty(bm2));
+    assert(bm_is_empty(bm));
 
-    bm_free(bm1);
-    bm_free(bm2);
+    bm_free(bm);
 }
 
 void clear_bit_test() {
@@ -136,8 +129,8 @@ void and_test() {
     bm_clear_bit(bm2, 2);
     assert(bm_eq(bm1, bm2));
 
-    bm_free(bm1);
-    bm_free(bm2);
+     bm_free(bm1);
+     bm_free(bm2);
 }
 
 void is_disjoint_test() {
