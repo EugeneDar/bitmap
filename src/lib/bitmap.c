@@ -1,4 +1,3 @@
-#include <memory.h>
 #include "bitmap.h"
 
 /**
@@ -10,16 +9,6 @@
  * https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
  * and mb
  * https://stackoverflow.blog/2020/07/08/improving-performance-with-simd-intrinsics-in-three-use-cases/
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
 */
 
 void change_size(struct bitmap_t *bm, uint64_t new_size) {
@@ -47,7 +36,7 @@ struct bitmap_t *bm_new() {
 }
 
 void bm_init(struct bitmap_t *ptr) {
-    for (uint8_t i = 0; i < ptr->size; ++i) {
+    for (uint64_t i = 0; i < ptr->size; ++i) {
         ptr->map[i] = 0;
     }
 }

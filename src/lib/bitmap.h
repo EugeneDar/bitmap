@@ -3,6 +3,7 @@
 #include <immintrin.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <memory.h>
 
 struct bitmap_t {
     uint8_t* map;
