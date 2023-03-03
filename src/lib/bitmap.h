@@ -1,10 +1,10 @@
-#include <stdbool.h>
-#include <smmintrin.h>
 #include <immintrin.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <memory.h>
+#include <smmintrin.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 struct bitmap_t {
     uint8_t* map;

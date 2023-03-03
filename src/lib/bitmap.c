@@ -11,13 +11,12 @@ void change_size(struct bitmap_t *bm, uint64_t new_size) {
     bm->map = tmp;
 
     for (uint64_t i = bm->size; i < new_size; i += 16) {
-        asm volatile (
-                "xorps %%xmm0, %%xmm0\n"
-                "movups %%xmm0, (%0)\n"
-                :
-                : "rm"(bm->map + i)
-                : "xmm0"
-                );
+        asm volatile(
+            "xorps %%xmm0, %%xmm0\n"
+            "movups %%xmm0, (%0)\n"
+            :
+            : "rm"(bm->map + i)
+            : "xmm0");
     }
 
     bm->size = new_size;
@@ -44,17 +43,16 @@ void bm_free(struct bitmap_t *ptr) {
 bool bm_is_empty(const struct bitmap_t *bm) {
     for (uint64_t i = 0; i < bm->size; i += 16) {
         int result;
-        asm volatile (
-                "movups (%1), %%xmm0\n"
-                "mov $0, %0\n"
-                "ptest %%xmm0, %%xmm0\n"
-                "jz end_position_2\n"
-                "mov $1, %0\n"
-                "end_position_2:\n"
-                : "=rm"(result)
-                : "rm"(bm->map + i)
-                : "xmm0", "xmm1"
-                );
+        asm volatile(
+            "movups (%1), %%xmm0\n"
+            "mov $0, %0\n"
+            "ptest %%xmm0, %%xmm0\n"
+            "jz end_position_2\n"
+            "mov $1, %0\n"
+            "end_position_2:\n"
+            : "=rm"(result)
+            : "rm"(bm->map + i)
+            : "xmm0", "xmm1");
         if (result) {
             return false;
         }
@@ -79,21 +77,19 @@ void bm_clear_bit(struct bitmap_t *bm, uint64_t idx) {
 
 bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     if (bm1->size >= bm2->size) {
-
         for (uint64_t i = 0; i < bm2->size; i += 16) {
             int result;
-            asm volatile (
-                    "movups (%1), %%xmm0\n"
-                    "movups (%2), %%xmm1\n"
-                    "mov $0, %0\n"
-                    "comisd %%xmm0, %%xmm1\n"
-                    "jz end_position_3\n"
-                    "mov $1, %0\n"
-                    "end_position_3:\n"
-                    : "=rm"(result)
-                    : "rm"(bm1->map + i), "rm"(bm2->map + i)
-                    : "xmm0", "xmm1"
-                    );
+            asm volatile(
+                "movups (%1), %%xmm0\n"
+                "movups (%2), %%xmm1\n"
+                "mov $0, %0\n"
+                "comisd %%xmm0, %%xmm1\n"
+                "jz end_position_3\n"
+                "mov $1, %0\n"
+                "end_position_3:\n"
+                : "=rm"(result)
+                : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                : "xmm0", "xmm1");
             if (result) {
                 return false;
             }
@@ -101,38 +97,35 @@ bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
 
         for (uint64_t i = bm2->size; i < bm1->size; i += 16) {
             int result;
-            asm volatile (
-                    "movups (%1), %%xmm0\n"
-                    "mov $0, %0\n"
-                    "ptest %%xmm0, %%xmm0\n"
-                    "jz end_position_4\n"
-                    "mov $1, %0\n"
-                    "end_position_4:\n"
-                    : "=rm"(result)
-                    : "rm"(bm1->map + i)
-                    : "xmm0", "xmm1"
-                    );
+            asm volatile(
+                "movups (%1), %%xmm0\n"
+                "mov $0, %0\n"
+                "ptest %%xmm0, %%xmm0\n"
+                "jz end_position_4\n"
+                "mov $1, %0\n"
+                "end_position_4:\n"
+                : "=rm"(result)
+                : "rm"(bm1->map + i)
+                : "xmm0", "xmm1");
             if (result) {
                 return false;
             }
         }
 
     } else {
-
         for (uint64_t i = 0; i < bm1->size; i += 16) {
             int result;
-            asm volatile (
-                    "movups (%1), %%xmm0\n"
-                    "movups (%2), %%xmm1\n"
-                    "mov $0, %0\n"
-                    "comisd %%xmm0, %%xmm1\n"
-                    "jz end_position_5\n"
-                    "mov $1, %0\n"
-                    "end_position_5:\n"
-                    : "=rm"(result)
-                    : "rm"(bm1->map + i), "rm"(bm2->map + i)
-                    : "xmm0", "xmm1"
-                    );
+            asm volatile(
+                "movups (%1), %%xmm0\n"
+                "movups (%2), %%xmm1\n"
+                "mov $0, %0\n"
+                "comisd %%xmm0, %%xmm1\n"
+                "jz end_position_5\n"
+                "mov $1, %0\n"
+                "end_position_5:\n"
+                : "=rm"(result)
+                : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                : "xmm0", "xmm1");
             if (result) {
                 return false;
             }
@@ -140,17 +133,16 @@ bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
 
         for (uint64_t i = bm1->size; i < bm2->size; i += 16) {
             int result;
-            asm volatile (
-                    "movups (%1), %%xmm0\n"
-                    "mov $0, %0\n"
-                    "ptest %%xmm0, %%xmm0\n"
-                    "jz end_position_6\n"
-                    "mov $1, %0\n"
-                    "end_position_6:\n"
-                    : "=rm"(result)
-                    : "rm"(bm2->map + i)
-                    : "xmm0", "xmm1"
-                    );
+            asm volatile(
+                "movups (%1), %%xmm0\n"
+                "mov $0, %0\n"
+                "ptest %%xmm0, %%xmm0\n"
+                "jz end_position_6\n"
+                "mov $1, %0\n"
+                "end_position_6:\n"
+                : "=rm"(result)
+                : "rm"(bm2->map + i)
+                : "xmm0", "xmm1");
             if (result) {
                 return false;
             }
@@ -163,24 +155,22 @@ bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
 void bm_and(struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     uint64_t min_size = bm1->size < bm2->size ? bm1->size : bm2->size;
     for (uint64_t i = 0; i < min_size; i += 16) {
-        asm volatile (
-                "movups (%0), %%xmm0\n"
-                "movups (%1), %%xmm1\n"
-                "andps %%xmm1, %%xmm0\n"
-                "movups %%xmm0, (%0)\n"
-                :
-                : "rm"(bm1->map + i), "rm"(bm2->map + i)
-                : "xmm0", "xmm1"
-                );
+        asm volatile(
+            "movups (%0), %%xmm0\n"
+            "movups (%1), %%xmm1\n"
+            "andps %%xmm1, %%xmm0\n"
+            "movups %%xmm0, (%0)\n"
+            :
+            : "rm"(bm1->map + i), "rm"(bm2->map + i)
+            : "xmm0", "xmm1");
     }
     for (uint64_t i = min_size; i < bm1->size; i += 16) {
-        asm volatile (
-                "xorps %%xmm0, %%xmm0\n"
-                "movups %%xmm0, (%0)\n"
-                :
-                : "rm"(bm1->map + i)
-                : "xmm0"
-                );
+        asm volatile(
+            "xorps %%xmm0, %%xmm0\n"
+            "movups %%xmm0, (%0)\n"
+            :
+            : "rm"(bm1->map + i)
+            : "xmm0");
     }
 }
 
@@ -189,15 +179,14 @@ void bm_or(struct bitmap_t *bm1, const struct bitmap_t *bm2) {
         change_size(bm1, bm2->size);
     }
     for (uint64_t i = 0; i < bm2->size; i += 16) {
-        asm volatile (
-                "movups (%0), %%xmm0\n"
-                "movups (%1), %%xmm1\n"
-                "orps %%xmm1, %%xmm0\n"
-                "movups %%xmm0, (%0)\n"
-                :
-                : "rm"(bm1->map + i), "rm"(bm2->map + i)
-                : "xmm0", "xmm1"
-                );
+        asm volatile(
+            "movups (%0), %%xmm0\n"
+            "movups (%1), %%xmm1\n"
+            "orps %%xmm1, %%xmm0\n"
+            "movups %%xmm0, (%0)\n"
+            :
+            : "rm"(bm1->map + i), "rm"(bm2->map + i)
+            : "xmm0", "xmm1");
     }
 }
 
@@ -205,20 +194,19 @@ bool is_disjoint(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     uint64_t min_size = bm1->size < bm2->size ? bm1->size : bm2->size;
     for (uint64_t i = 0; i < min_size; i += 16) {
         int result;
-        asm volatile (
-                "movups (%1), %%xmm0\n"
-                "movups (%2), %%xmm1\n"
-                "andps %%xmm1, %%xmm0\n"
-                "xorps %%xmm1, %%xmm1\n"
-                "mov $0, %0\n"
-                "comisd %%xmm1, %%xmm0\n"
-                "jz end_position\n"
-                "mov $1, %0\n"
-                "end_position:\n"
-                : "=rm"(result)
-                : "rm"(bm1->map + i), "rm"(bm2->map + i)
-                : "xmm0", "xmm1"
-                );
+        asm volatile(
+            "movups (%1), %%xmm0\n"
+            "movups (%2), %%xmm1\n"
+            "andps %%xmm1, %%xmm0\n"
+            "xorps %%xmm1, %%xmm1\n"
+            "mov $0, %0\n"
+            "comisd %%xmm1, %%xmm0\n"
+            "jz end_position\n"
+            "mov $1, %0\n"
+            "end_position:\n"
+            : "=rm"(result)
+            : "rm"(bm1->map + i), "rm"(bm2->map + i)
+            : "xmm0", "xmm1");
         if (result) {
             return false;
         }

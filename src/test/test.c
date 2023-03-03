@@ -1,7 +1,7 @@
 #include "test.h"
 
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "../../src/lib/bitmap.h"
 
@@ -129,8 +129,8 @@ void and_test() {
     bm_clear_bit(bm2, 2);
     assert(bm_eq(bm1, bm2));
 
-     bm_free(bm1);
-     bm_free(bm2);
+    bm_free(bm1);
+    bm_free(bm2);
 }
 
 void is_disjoint_test() {
