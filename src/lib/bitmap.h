@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <memory.h>
+#include <stdio.h>
 
 struct bitmap_t {
     uint8_t* map;
