@@ -12,6 +12,7 @@
 */
 
 void change_size(struct bitmap_t *bm, uint64_t new_size) {
+    new_size = ((new_size + 15) / 16) * 16;
     uint8_t *tmp = realloc(bm->map, new_size);
     if (!tmp) {
         free(bm->map);
