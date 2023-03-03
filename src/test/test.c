@@ -69,11 +69,11 @@ void is_empty_test() {
 
     assert(bm_is_empty(bm));
 
-    bm_set_bit(bm, 1);
+    bm_set_bit(bm, 10000);
 
     assert(!bm_is_empty(bm));
 
-    bm_clear_bit(bm, 1);
+    bm_clear_bit(bm, 10000);
 
     assert(bm_is_empty(bm));
 
