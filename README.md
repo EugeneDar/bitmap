@@ -1,5 +1,7 @@
 ## bitmap
 
+A data structure that provides a way to work with bit fields of arbitrary length.
+
 ### Quick start
 
 ```
