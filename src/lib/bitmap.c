@@ -22,7 +22,7 @@ void change_size(struct bitmap_t *bm, uint64_t new_size) {
     bm->map = tmp;
 
     // todo use sse
-    for (uint64_t i = bm->size;i < new_size;++i) {
+    for (uint64_t i = bm->size; i < new_size; ++i) {
         bm->map[i] = 0;
     }
 
@@ -108,24 +108,44 @@ bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     return true;
 }
 
-// todo use sse
 void bm_and(struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     uint64_t min_size = bm1->size < bm2->size ? bm1->size : bm2->size;
-    for (uint64_t i = 0; i < min_size; ++i) {
-        bm1->map[i] = bm1->map[i] & bm2->map[i];
+    for (uint64_t i = 0; i < min_size; i += 16) {
+        asm volatile (
+                "movups (%0), %%xmm0\n"
+                "movups (%1), %%xmm1\n"
+                "andps %%xmm1, %%xmm0\n"
+                "movups %%xmm0, (%0)\n"
+                :
+                : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                : "xmm0", "xmm1"
+                );
     }
-    for (uint64_t i = min_size; i < bm1->size; ++i) {
-        bm1->map[i] = 0;
+    for (uint64_t i = min_size; i < bm1->size; i += 16) {
+        asm volatile (
+                "xorps %%xmm0, %%xmm0\n"
+                "movups %%xmm0, (%0)\n"
+                :
+                : "rm"(bm1->map + i)
+                : "xmm0"
+                );
     }
 }
 
-// todo use sse
 void bm_or(struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     if (bm1->size < bm2->size) {
         change_size(bm1, bm2->size);
     }
-    for (uint64_t i = 0; i < bm2->size; ++i) {
-        bm1->map[i] = bm1->map[i] | bm2->map[i];
+    for (uint64_t i = 0; i < bm2->size; i += 16) {
+        asm volatile (
+                "movups (%0), %%xmm0\n"
+                "movups (%1), %%xmm1\n"
+                "orps %%xmm1, %%xmm0\n"
+                "movups %%xmm0, (%0)\n"
+                :
+                : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                : "xmm0", "xmm1"
+                );
     }
 }
 
