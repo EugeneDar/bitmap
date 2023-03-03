@@ -16,3 +16,7 @@
 
     assert(bm_eq(bm1, bm2));
 ```
+
+### Run tests
+
+    $ bash test.sh 
