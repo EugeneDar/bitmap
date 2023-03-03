@@ -71,6 +71,7 @@ void bm_set_bit(struct bitmap_t *bm, uint64_t idx) {
     uint8_t value = ((1 << (idx & 7)));
 
     bm->map[idx >> 3] |= value;
+
 }
 
 void bm_clear_bit(struct bitmap_t *bm, uint64_t idx) {
@@ -82,13 +83,26 @@ void bm_clear_bit(struct bitmap_t *bm, uint64_t idx) {
 bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
     if (bm1->size >= bm2->size) {
 
-        for (uint64_t i = 0; i < bm2->size; ++i) {
-            if (bm1->map[i] != bm2->map[i]) {
+        for (uint64_t i = 0; i < bm2->size; i += 16) {
+            int result;
+            asm volatile (
+                    "movups (%1), %%xmm0\n"
+                    "movups (%2), %%xmm1\n"
+                    "mov $0, %0\n"
+                    "comisd %%xmm0, %%xmm1\n"
+                    "jz end_position_3\n"
+                    "mov $1, %0\n"
+                    "end_position_3:\n"
+                    : "=rm"(result)
+                    : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                    : "xmm0", "xmm1"
+                    );
+            if (result) {
                 return false;
             }
         }
 
-        for (uint64_t i = bm2->size; i < bm1->size; ++i) {
+        for (uint64_t i = bm2->size; i < bm1->size; i += 1) {
             if (bm1->map[i] != 0) {
                 return false;
             }
@@ -96,8 +110,21 @@ bool bm_eq(const struct bitmap_t *bm1, const struct bitmap_t *bm2) {
 
     } else {
 
-        for (uint64_t i = 0; i < bm1->size; ++i) {
-            if (bm1->map[i] != bm2->map[i]) {
+        for (uint64_t i = 0; i < bm1->size; i += 16) {
+            int result;
+            asm volatile (
+                    "movups (%1), %%xmm0\n"
+                    "movups (%2), %%xmm1\n"
+                    "mov $0, %0\n"
+                    "comisd %%xmm0, %%xmm1\n"
+                    "jz end_position_5\n"
+                    "mov $1, %0\n"
+                    "end_position_5:\n"
+                    : "=rm"(result)
+                    : "rm"(bm1->map + i), "rm"(bm2->map + i)
+                    : "xmm0", "xmm1"
+                    );
+            if (result) {
                 return false;
             }
         }
