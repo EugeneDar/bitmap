@@ -1,18 +1,7 @@
 #include "bitmap.h"
 
-/**
- * TODO
- *
- * READ
- *
- * https://github.com/blackav/hse-caos-2020/blob/master/09-asm3/README.md
- * https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
- * and mb
- * https://stackoverflow.blog/2020/07/08/improving-performance-with-simd-intrinsics-in-three-use-cases/
-*/
-
 void change_size(struct bitmap_t *bm, uint64_t new_size) {
-    new_size = ((new_size + 15) / 16) * 16;
+    new_size = ((new_size + 15) >> 4) << 4;
     uint8_t *tmp = realloc(bm->map, new_size);
     if (!tmp) {
         free(bm->map);
@@ -21,9 +10,14 @@ void change_size(struct bitmap_t *bm, uint64_t new_size) {
     }
     bm->map = tmp;
 
-    // todo use sse
-    for (uint64_t i = bm->size; i < new_size; ++i) {
-        bm->map[i] = 0;
+    for (uint64_t i = bm->size; i < new_size; i += 16) {
+        asm volatile (
+                "xorps %%xmm0, %%xmm0\n"
+                "movups %%xmm0, (%0)\n"
+                :
+                : "rm"(bm->map + i)
+                : "xmm0"
+                );
     }
 
     bm->size = new_size;
@@ -57,7 +51,6 @@ bool bm_is_empty(const struct bitmap_t *bm) {
     return true;
 }
 
-// todo use sse
 void bm_set_bit(struct bitmap_t *bm, uint64_t idx) {
     if ((idx >> 3) + 1 > bm->size) {
         change_size(bm, (idx >> 3) + 1);
@@ -68,7 +61,6 @@ void bm_set_bit(struct bitmap_t *bm, uint64_t idx) {
     bm->map[idx >> 3] |= value;
 }
 
-// todo use sse
 void bm_clear_bit(struct bitmap_t *bm, uint64_t idx) {
     bm_set_bit(bm, idx);
     bm->map[idx >> 3] ^= ((1 << (idx & 7)));
